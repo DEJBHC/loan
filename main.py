@@ -4,7 +4,7 @@ from tkinter import ttk, messagebox, simpledialog, Text, Scrollbar
 
 def equal_principal_and_interest(principal, interest, time):
     monthly_payment = principal * ((interest / 12) * (1 + (interest / 12)) ** time) / (
-                ((1 + (interest / 12)) ** time) - 1)
+            ((1 + (interest / 12)) ** time) - 1)
     return ['每月应还 {:.2f}'.format(monthly_payment), '本息合计 {:.2f}'.format(monthly_payment * time),
             '利息 {:.2f}'.format(monthly_payment * time - principal)]
 
@@ -82,36 +82,60 @@ def main_window():
         # 显示对话框
         dialog.wait_window()
 
+    def check(s):
+        try:
+            float(s)
+            return True
+        except ValueError:
+            return False
+
     def on_button_click():
-        # 假设我们想要将三个输入框的内容以及下拉框的选择打印到只读文本框中
-        principal = float(principal_entry.get())
-        interest_rate = float(interest_rate_entry.get())
-        time = float(time_entry.get())
-        selection = combo_box.get()
-        if selection == '等额本息':
-            result = equal_principal_and_interest(principal, interest_rate, time)
-            messagebox.showinfo('等额本息', result[0] + '\n' + result[1] + '\n' + result[2])
-        elif selection == '等额本金':
-            result = equal_principal(principal, interest_rate, time)
-            custom_message_box('等额本金', result[0] + '\n' + result[1] + '\n' + result[2], parent=root)
-        elif selection == '按月付息，到期还本':
-            result = monthly_interest_calculation_and_principal_repayment_at_maturity(principal, interest_rate, time)
-            for i in result:
-                print(i)
-            messagebox.showinfo('按月付息，到期还本', result[0] + '\n' + result[1] + '\n' + result[2] + '\n' + result[3])
-        elif selection == '按季付息，到期还本':
-            result = quarter_interest_calculation_and_principal_repayment_at_maturity(principal, interest_rate, time)
-            messagebox.showinfo('按季付息，到期还本', result[0] + '\n' + result[1] + '\n' + result[2] + '\n' + result[3])
-        elif selection == '按半年付息，到期还本':
-            result = half_year_interest_calculation_and_principal_repayment_at_maturity(principal, interest_rate, time)
-            messagebox.showinfo('按半年付息，到期还本',
-                                result[0] + '\n' + result[1] + '\n' + result[2] + '\n' + result[3])
-        elif selection == '按年付息，到期还本':
-            result = year_interest_calculation_and_principal_repayment_at_maturity(principal, interest_rate, time)
-            messagebox.showinfo('按年付息，到期还本', result[0] + '\n' + result[1] + '\n' + result[2] + '\n' + result[3])
-        elif selection == '一次性利随本清':
-            result = one_time_interest_calculation_and_principal_repayment_at_maturity(principal, interest_rate, time)
-            messagebox.showinfo('一次性利随本清', result[0] + '\n' + result[1])
+        if check(principal_entry.get()) and check(interest_rate_entry.get()) and time_entry.get().isdigit():
+            if float(interest_rate_entry.get()) >= 1 or float(interest_rate_entry.get()) <= 0:
+                messagebox.showerror('错误', '您输入的数字有误，请输入0-1之间的小数')
+            elif float(principal_entry.get()) <= 0 or float(time_entry.get()) <= 0:
+                messagebox.showerror('错误', '您输入的数字有误，请输入大于0的数字')
+            elif float(time_entry.get()) >= 480:
+                messagebox.showerror('错误', '您输入的数字有误，贷款年限不得大于40年')
+            else:
+                principal = float(principal_entry.get())
+                interest_rate = float(interest_rate_entry.get())
+                time = float(time_entry.get())
+                selection = combo_box.get()
+                if selection == '等额本息':
+                    result = equal_principal_and_interest(principal, interest_rate, time)
+                    messagebox.showinfo('等额本息', result[0] + '\n' + result[1] + '\n' + result[2])
+                elif selection == '等额本金':
+                    result = equal_principal(principal, interest_rate, time)
+                    custom_message_box('等额本金', result[0] + '\n' + result[1] + '\n' + result[2], parent=root)
+                elif selection == '按月付息，到期还本':
+                    result = monthly_interest_calculation_and_principal_repayment_at_maturity(principal, interest_rate,
+                                                                                              time)
+                    for i in result:
+                        print(i)
+                    messagebox.showinfo('按月付息，到期还本',
+                                        result[0] + '\n' + result[1] + '\n' + result[2] + '\n' + result[3])
+                elif selection == '按季付息，到期还本':
+                    result = quarter_interest_calculation_and_principal_repayment_at_maturity(principal, interest_rate,
+                                                                                              time)
+                    messagebox.showinfo('按季付息，到期还本',
+                                        result[0] + '\n' + result[1] + '\n' + result[2] + '\n' + result[3])
+                elif selection == '按半年付息，到期还本':
+                    result = half_year_interest_calculation_and_principal_repayment_at_maturity(principal,
+                                                                                                interest_rate, time)
+                    messagebox.showinfo('按半年付息，到期还本',
+                                        result[0] + '\n' + result[1] + '\n' + result[2] + '\n' + result[3])
+                elif selection == '按年付息，到期还本':
+                    result = year_interest_calculation_and_principal_repayment_at_maturity(principal, interest_rate,
+                                                                                           time)
+                    messagebox.showinfo('按年付息，到期还本',
+                                        result[0] + '\n' + result[1] + '\n' + result[2] + '\n' + result[3])
+                elif selection == '一次性利随本清':
+                    result = one_time_interest_calculation_and_principal_repayment_at_maturity(principal, interest_rate,
+                                                                                               time)
+                    messagebox.showinfo('一次性利随本清', result[0] + '\n' + result[1])
+        else:
+            messagebox.showerror('错误', '请输入正确的数字')
 
     # 创建主窗口
     root = tk.Tk()
